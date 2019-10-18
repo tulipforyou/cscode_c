@@ -2,20 +2,21 @@
 #include <algorithm>
 #include <vector>
 #include <math.h>
-#include<ctype.h>
-#include<string.h>
-#include<time.h>
-#include<unistd.h>
-#include<pwd.h>
-#include<stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <stdlib.h>
+#include "file.h"
 using namespace std;
 #define SIZE 64
 int main()
 {
     time_t tim;
     time(&tim);
-    cout<<"当前时间为： "<<ctime(&tim);
-    cout<<"当前用户为： "<<getlogin()<<endl;
+    cout << "当前时间为： " << ctime(&tim);
+    cout << "当前用户为： " << getlogin() << endl;
     /*struct passwd * user;
     user=getpwent();
     while(user!=NULL)
@@ -24,7 +25,7 @@ int main()
         user=getpwent();
     }
     endpwent();*/
-    char *p;
+    /*char *p;
     p=getenv("SHELL");//获取环境变量
     if(p==NULL)
     {
@@ -56,7 +57,9 @@ int main()
         cout<<p1<<endl;
         p1=strtok(NULL," ");
     }
-    cout<<str<<endl;
-
+    cout<<str<<endl;*/
+    
+    
+    
     return 0;
 }
