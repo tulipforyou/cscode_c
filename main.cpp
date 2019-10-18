@@ -9,6 +9,7 @@
 #include <pwd.h>
 #include <stdlib.h>
 #include "file.h"
+#include "findAlgorithm.h"
 using namespace std;
 #define SIZE 64
 int main()
@@ -58,8 +59,12 @@ int main()
         p1=strtok(NULL," ");
     }
     cout<<str<<endl;*/
-    
-    
-    
+
+    vector<int> v;
+    findAlgorithm<int> fa;
+    for (int i = 0; i < 50005000; i++)
+        v.push_back(i);
+    cout << "二分查找法：" << endl;
+    cout << fa.binarySearch(728249, v) << "次比较" << endl;
     return 0;
 }
