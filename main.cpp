@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include "file.h"
 #include "findAlgorithm.h"
+#include "sortAlgorthm.h"
 using namespace std;
 #define SIZE 64
 int main()
@@ -60,7 +61,7 @@ int main()
     }
     cout<<str<<endl;*/
 
-    vector<int> v;
+    /*vector<int> v;
     findAlgorithm<int> fa;
     for (int i = 0; i < 50000; i++)
         v.push_back(i);
@@ -75,6 +76,19 @@ int main()
     clock_t begin2=clock();
     bst.search(2345);
     clock_t end2=clock();
-    cout<<"二叉排序树查找用时:"<<end2-begin2<<endl;
+    cout<<"二叉排序树查找用时:"<<end2-begin2<<endl;*/
+
+    sortAlgorithm<int> sa;
+    vector<int> v = {5985, 6, 16, 1, 16, 1, 166, 16, 16, 16, 1, 515, 156, 1, 1, 6161, 161646};
+    cout<<"插入排序:"<<endl;
+    sa.insertSort(v);
+    cout<<"希尔排序:"<<endl;
+    sa.shellSort(v);
+    cout<<"冒泡排序:"<<endl;
+    sa.bubbleSort(v);
+    cout<<"快速排序:"<<endl;
+    sa.quickSort(v);
+    cout<<"选择排序:"<<endl;
+    sa.selectSort(v);
     return 0;
 }
