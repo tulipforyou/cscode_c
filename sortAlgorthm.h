@@ -1,3 +1,9 @@
+/*
+Designed by sch
+time:2019.10.19
+此文件用于排序算法测试用例
+*/
+
 #ifndef _SORTALGORITHM_H
 #define _SORTALGORITHM_H
 
@@ -14,7 +20,7 @@ public:
     int bubbleSort(vector<T> &v); //冒泡排序
     void quickSort(vector<T> &v);
     vector<T> quickSort(vector<T> &v, int n, int begin, int end); //快速排序
-    int selectSort(vector<T> &v);                           //选择排序
+    int selectSort(vector<T> &v);                                 //选择排序
     void print(vector<T> &v);
 };
 
@@ -75,7 +81,7 @@ template <class T>
 void sortAlgorithm<T>::quickSort(vector<T> &v)
 {
     int n = v.size();
-    vector<T> vv=quickSort(v, v.size(), 0, v.size() - 1);
+    vector<T> vv = quickSort(v, v.size(), 0, v.size() - 1);
     for (int i = 0; i < vv.size(); i++)
         cout << vv[i] << " ";
     cout << endl;
