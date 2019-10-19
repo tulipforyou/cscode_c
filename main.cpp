@@ -62,9 +62,19 @@ int main()
 
     vector<int> v;
     findAlgorithm<int> fa;
-    for (int i = 0; i < 50005000; i++)
+    for (int i = 0; i < 50000; i++)
         v.push_back(i);
+    clock_t begin1=clock();
     cout << "二分查找法：" << endl;
-    cout << fa.binarySearch(728249, v) << "次比较" << endl;
+    cout << fa.binarySearch(2345, v) << "次比较" << endl;
+    clock_t end1=clock();
+    cout <<"二分查找用时："<< end1-begin1 << endl;
+    cout << "二叉排序树法：" << endl;
+    binarySortTree<int> bst;
+    bst.CreatebinarySortTree(v, 50000);
+    clock_t begin2=clock();
+    bst.search(2345);
+    clock_t end2=clock();
+    cout<<"二叉排序树查找用时:"<<end2-begin2<<endl;
     return 0;
 }
