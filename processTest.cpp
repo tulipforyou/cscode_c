@@ -26,7 +26,7 @@ int main()
     chdir("/tmp");
     setsid();
     umask(0);
-    signal(SIGCHLD, SIG_IGN);
+    signal(SIGCHLD, SIG_IGN);  //忽略sigchld信号,sigchld是子进程结束时给父进程发的一个信号
     while (1)
     {
         time(&now);

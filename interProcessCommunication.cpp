@@ -11,7 +11,14 @@ time:2019.10.24
     命名管道创建：int mkfifo(const char *pathname,mode_t mode)  //pathname是管道名字的全路径，mode是权限
     删除命名管道：int unlink(const char * pathname)
     打开命名管道：使用命名管道之前要使用open函数打开管道文件
-    读写命名管道：
+    读写命名管道：暂无
+消息队列：
+    创建：int msgget(key_t key,int msgflg);key为键值，可直接指定或ftok函数自动生成。msgflg是设置消息队列的权限。
+    控制消息队列：int msgctl(int msqid,int cmd,struct msqid_ds *buf)；
+                msqid是消息队列的标识符，cmd为所要进行的操作，cmd有以下几个选项：
+                                                                    IPC_STAT:获取消息状态。信息存在buf指向的msqid_ds结构中中
+                                                                    IPC_SET:设置队列属性。要设置的属性存在buf指向的msqid_ds结构中
+                                                                    IPC_RMID:删除消息队列
 */
 
 #include <iostream>
@@ -20,6 +27,10 @@ using namespace std;
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/msg.h>
+#include <sys/ipc.h>
 
 #define BUFSIZE 256
 
@@ -53,19 +64,61 @@ void pipe_communication_nm() //匿名管道通信测试
         cout << buf << endl;
         if (pid != wait(&sta))
         {
-            cout << "eait error" << endl;
+            cout << "wait error" << endl;
             exit(1);
         }
     }
 }
 
-void pipe_communication_mm()
+void signal_set_handler(int sig) //sig是信号的编号,
 {
+    cout << "接收到信号：" << sig << endl;
+    exit(0);
+}
+void signal_set() //信号集
+{
+    sigset_t set;                       //定义一个信号集
+    sigemptyset(&set);                  //初始化信号集，清空所有信号
+    sigaddset(&set, SIGINT);            //把SIGINT信号加入到set信号集里面
+    signal(SIGINT, signal_set_handler); //设置信号处理函数
+    while (1)
+    {
+        /* code */
+        sigprocmask(SIG_BLOCK, &set, NULL); //阻塞信号
+        cout << "SIGINT信号阻塞中。。。。。。" << endl;
+        sleep(5);
+        sigprocmask(SIG_UNBLOCK, &set, NULL); //解除阻塞
+        cout << "SIGINT信号已解阻。。。。。。" << endl;
+        sleep(5);
+    }
+}
 
+void msgQueue()//消息队列
+{
+    int qid;
+    key_t key;
+    key = ftok("/home/sunchaohui/CProject/test_c", 'a'); //生成键值
+    if (key < 0)
+    {
+        cout << "ftok error......" << endl;
+        exit(1);
+    }
+    qid = msgget(key, IPC_CREAT | 0666); //创建消息队列
+    if (qid < 0)
+    {
+        cout << "msgget error......" << endl;
+        exit(1);
+    }
+    else
+    {
+        cout << "消息队列创建成功！" << endl;
+    }
 }
 
 int main()
 {
-    pipe_communication_nm();
+    //pipe_communication_nm();
+    //signal_set();
+    msgQueue();
     return 0;
 }
