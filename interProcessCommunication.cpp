@@ -20,6 +20,11 @@ time:2019.10.24
                                                                     IPC_SET:设置队列属性。要设置的属性存在buf指向的msqid_ds结构中
                                                                     IPC_RMID:删除消息队列
     读写消息队列：int msgsnd(int msqid,struct msgbuf *msgp,int msgsz,int msgflg);msgp是消息内容，msgsz是消息大小，msgflg消息队列没有足够空间时的操作
+共享内存：
+    创建或打开：int shmget(key_t key,int size,int shmflg);size是内存的大小，shmflg是权限
+    读写共享内存：void shmat(int shm_id,void *shm_addr,int shmflg);shm_addr设置共享内存映射到进程地址空间的具体位置，一般情况为NULL，shmflg是权限，函数返回映射后共享内存的地址
+                通过这个地址，进程可以像访问一般内存一样访问共享内存了
+    共享内存脱离地址空间：int shmdt(void *shmaddr);执行成功返回0
 */
 
 #include <iostream>
@@ -34,6 +39,7 @@ using namespace std;
 #include <sys/ipc.h>
 #include <syslog.h>
 #include <time.h>
+#include <sys/shm.h>
 
 #define BUFSIZE 256
 
@@ -153,10 +159,37 @@ void msgQueue() //消息队列
     }
 }
 
+void shm_communication()
+{
+    int shmid;
+    pid_t pid;
+    int psm;
+    struct shmid_ds dsbuf;
+    key_t key = ftok("/home/sunchaohui/CProject/test_c", 's');
+    if (key < 0)
+    {
+        cout << "ftok error" << endl;
+        exit(1);
+    }
+    shmid = shmget(key, 1024, IPC_CREAT | 0666);
+    if (shmid < 0)
+    {
+        cout << "shmget error" << endl;
+        exit(1);
+    }
+    else
+    {
+        cout << "创建共享内存成功" << endl;
+    }
+
+    //shmctl(shmid,IPC_RMID,NULL);//删除共享内存
+}
+
 int main()
 {
     //pipe_communication_nm();
     //signal_set();
-    msgQueue();
+    // msgQueue();
+    shm_communication();
     return 0;
 }
