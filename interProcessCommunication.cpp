@@ -19,6 +19,7 @@ time:2019.10.24
                                                                     IPC_STAT:获取消息状态。信息存在buf指向的msqid_ds结构中中
                                                                     IPC_SET:设置队列属性。要设置的属性存在buf指向的msqid_ds结构中
                                                                     IPC_RMID:删除消息队列
+    读写消息队列：int msgsnd(int msqid,struct msgbuf *msgp,int msgsz,int msgflg);msgp是消息内容，msgsz是消息大小，msgflg消息队列没有足够空间时的操作
 */
 
 #include <iostream>
@@ -31,6 +32,8 @@ using namespace std;
 #include <sys/types.h>
 #include <sys/msg.h>
 #include <sys/ipc.h>
+#include <syslog.h>
+#include <time.h>
 
 #define BUFSIZE 256
 
@@ -93,25 +96,60 @@ void signal_set() //信号集
     }
 }
 
-void msgQueue()//消息队列
+void msgQueue() //消息队列
 {
-    int qid;
-    key_t key;
-    key = ftok("/home/sunchaohui/CProject/test_c", 'a'); //生成键值
-    if (key < 0)
+    int fifod[2];
+    int buf[BUFSIZE];
+    if (pipe(fifod) < 0) //创建匿名管道
     {
-        cout << "ftok error......" << endl;
+        cout << "pipe error!";
         exit(1);
     }
-    qid = msgget(key, IPC_CREAT | 0666); //创建消息队列
-    if (qid < 0)
+
+    pid_t pid;
+    pid = fork(); //创建子进程删除消息队列
+    if (pid < 0)
     {
-        cout << "msgget error......" << endl;
+        cout << "fork error......" << endl;
         exit(1);
+    }
+    if (pid == 0)
+    {
+        cout << "20s后删除消息队列" << endl;
+        close(fifod[1]);
+        read(fifod[0], buf, sizeof(buf));
+        int a = buf[0];
+        sleep(20);
+        msgctl(a, IPC_RMID, NULL); //删除消息队列
+        signal(SIGCHLD, SIG_IGN);
+        time_t now;
+        time(&now);
+        syslog(LOG_USER | LOG_INFO, "消息队列子进程在\t%s\t后删除了消息队列后退出！！！", ctime(&now));
     }
     else
     {
-        cout << "消息队列创建成功！" << endl;
+        int qid;
+        key_t key;
+        key = ftok("/home/sunchaohui/CProject/test_c", 'a'); //生成键值
+        if (key < 0)
+        {
+            cout << "ftok error......" << endl;
+            exit(1);
+        }
+        qid = msgget(key, IPC_CREAT | 0666); //创建消息队列
+        buf[0] = qid;
+        close(fifod[0]);
+        write(fifod[1], buf, sizeof(buf));
+        if (qid < 0)
+        {
+            cout << "msgget error......" << endl;
+            exit(1);
+        }
+        else
+        {
+            cout << "消息队列创建成功！" << endl;
+        }
+        cout << "父进程退出...." << endl;
     }
 }
 
